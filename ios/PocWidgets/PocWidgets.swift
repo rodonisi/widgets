@@ -35,17 +35,26 @@ struct CardDetail: AppEntity {
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(title: "\(name)")
     }
+
+    static var allCards: [CardDetail] = []
 }
 
 struct CardQuery: EntityQuery {
     func entities(for identifiers: [CardDetail.ID]) async throws -> [CardDetail] {
-        let data = UserDefaults.init(suiteName: groupId)
-        data?.
-        CardDetail.allCards.filter { identifiers.contains($0.id) }
+        try! await suggestedEntities()
     }
 
     func suggestedEntities() async throws -> [CardDetail] {
-        CardDetail.allCards
+        let data = UserDefaults(suiteName: groupId)
+        let cards = data?.array(forKey: "cards") as? [NSDictionary]
+        let details = cards?.map {
+            CardDetail(
+                id: String($0.value(forKey: "id") as? Int ?? 0),
+                name: $0.value(forKey: "name") as? String ?? "invalid name",
+                cardPath: data?.string(forKey: "card_\($0.value(forKey: "id") ?? "rip")") ?? "no path"
+            )
+        }
+        return details ?? []
     }
 
     func defaultResult() async -> CardDetail? {
@@ -77,17 +86,22 @@ struct CardDetailProvider: AppIntentTimelineProvider {
 struct CardEntryView: View {
     var entry: CardDetailProvider.Entry
 
-    var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("name:")
-            Text(entry.detail.name)
-
-            Text("id:")
-            Text(entry.detail.id)
+    var CardImage: some View {
+        if let uiImage = UIImage(contentsOfFile: entry.detail.cardPath) {
+            let image = Image(uiImage: uiImage)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .border(Color.red)
+            return AnyView(image)
         }
+        print("The image file could not be loaded")
+        return AnyView(EmptyView())
+    }
+
+    var body: some View {
+        CardImage
+            .frame(maxWidth: .infinity)
+            .border(Color.blue)
     }
 }
 
