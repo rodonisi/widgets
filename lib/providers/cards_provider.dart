@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,8 +28,11 @@ class Cards extends _$Cards {
       final data = await Future.wait(
         next.map((card) async {
           final path = await HomeWidget.renderFlutterWidget(
-            card.content,
+            SizedBox.square(dimension: 400, child: card.content),
             key: "card_${card.id}",
+            logicalSize: const Size(400, 400),
+            pixelRatio:
+                PlatformDispatcher.instance.implicitView?.devicePixelRatio ?? 3,
           );
           return {
             'id': card.id,

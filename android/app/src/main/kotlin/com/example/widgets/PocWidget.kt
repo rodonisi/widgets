@@ -2,7 +2,6 @@ package com.example.widgets
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -19,8 +18,10 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Box
+import androidx.glance.layout.ContentScale
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
+import androidx.glance.text.Text
 import es.antonborri.home_widget.actionStartActivity
 
 class PocWidget : GlanceAppWidget() {
@@ -42,6 +43,7 @@ class PocWidget : GlanceAppWidget() {
                         ImageProvider(bitmap),
                         null,
                         modifier = GlanceModifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
                     )
                 } ?: Text("No card selected")
 
