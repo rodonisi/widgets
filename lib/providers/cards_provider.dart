@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:home_widget/home_widget.dart';
@@ -22,20 +24,26 @@ class Cards extends _$Cards {
   @override
   List<WalletCard> build() {
     ref.listenSelf((previous, next) async {
-      await HomeWidget.saveWidgetData(
-        'cards',
-        next.map((card) => {'id': card.id, 'name': card.name}).toList(),
-      );
-      await Future.wait(
-        next.map(
-          (card) => HomeWidget.renderFlutterWidget(
+      final data = await Future.wait(
+        next.map((card) async {
+          final path = await HomeWidget.renderFlutterWidget(
             card.content,
             key: "card_${card.id}",
-            logicalSize: const Size(1024, 1024),
-          ),
-        ),
+          );
+          return {
+            'id': card.id,
+            'name': card.name,
+            'content': path,
+          };
+        }),
       );
-      await HomeWidget.updateWidget(name: 'PocWidgets', iOSName: 'PocWidgets');
+      await HomeWidget.saveWidgetData(
+        'cards',
+        jsonEncode(data),
+      );
+      await HomeWidget.updateWidget(
+        name: 'PocWidget',
+      );
       print('Updated widget!');
     });
     return [];

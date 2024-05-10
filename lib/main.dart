@@ -125,6 +125,12 @@ class CardsList extends ConsumerWidget {
       itemBuilder: (context, index) {
         return ListTile(
           title: Text(cards[index].name),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              ref.read(cardsProvider.notifier).remove(cards[index]);
+            },
+          ),
         );
       },
     );
