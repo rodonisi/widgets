@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -28,7 +30,10 @@ class Cards extends _$Cards {
       final data = await Future.wait(
         next.map((card) async {
           final path = await HomeWidget.renderFlutterWidget(
-            SizedBox.square(dimension: 400, child: card.content),
+            SizedBox.square(
+              dimension: 400,
+              child: FittedBox(child: card.content),
+            ),
             key: "card_${card.id}",
             logicalSize: const Size(400, 400),
             pixelRatio:
@@ -47,6 +52,7 @@ class Cards extends _$Cards {
       );
       await HomeWidget.updateWidget(
         name: 'PocWidget',
+        iOSName: 'PocWidgets',
       );
       print('Updated widget!');
     });
